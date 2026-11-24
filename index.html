@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>அலகு 1: சனநாயக ஆட்சி முறை</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg1:#14213D;--bg2:#0B3C49;--ink:#FFF4E0;--gold:#FCA311}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden}
+body{font-family:'Noto Sans Tamil',system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2));line-height:1.45}
+#cv{position:absolute;left:50%;top:50%;transform-origin:0 0;overflow:hidden}
+#app{width:100%;height:100%;display:flex;flex-direction:column}
+header{padding:26px 40px 6px;text-align:center}
+.unit{font-size:28px;color:var(--gold);font-weight:700}
+h1{font-size:56px;margin:2px 0 0;line-height:1.25;animation:rise .6s both}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}}
+@keyframes pop{from{opacity:0;transform:scale(.7)}}
+@keyframes float{50%{transform:translateY(-8px)}}
+#stage{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:8px 60px}
+.grid{display:flex;flex-wrap:wrap;gap:26px;justify-content:center;align-items:center;max-width:1800px}
+.tile{--c:#FCA311;font:inherit;color:var(--ink);cursor:pointer;width:440px;min-height:150px;padding:18px 24px;border-radius:26px;border:3px solid var(--c);background:rgba(255,255,255,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:32px;font-weight:700;box-shadow:0 0 28px -8px var(--c);animation:pop .5s both;animation-delay:var(--d);transition:transform .2s,background .2s}
+.tile .ic{font-size:54px;line-height:1.1;animation:float 3s ease-in-out infinite}
+.tile:hover{transform:translateY(-6px) scale(1.04);background:rgba(255,255,255,.16)}
+.tile.seen{background:color-mix(in srgb,var(--c) 22%,transparent)}
+.tile.seen::after{content:"✔";font-size:26px;color:var(--c)}
+.big{width:500px;min-height:240px;font-size:38px}
+.big .ic{font-size:76px}
+.sep{font-size:64px;font-weight:700;color:var(--gold);animation:pop .5s both;animation-delay:var(--d)}
+#hint{text-align:center;font-size:28px;opacity:.85}
+nav{display:flex;align-items:center;justify-content:center;gap:24px;padding:10px 20px 22px}
+nav button{font:inherit;font-size:32px;font-weight:700;border:0;border-radius:999px;padding:12px 44px;background:var(--gold);color:#14213D;cursor:pointer}
+nav button:disabled{opacity:.35;cursor:default}
+#dots{display:flex;gap:14px;align-items:center}
+#dots i{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer}
+#dots i.on{background:var(--gold);transform:scale(1.4)}
+#pop{position:absolute;inset:0;background:rgba(5,10,25,.74);display:none;align-items:center;justify-content:center;padding:30px;z-index:5}
+#pop.show{display:flex}
+#card{--c:#FCA311;position:relative;width:1200px;max-width:100%;max-height:100%;overflow:hidden;background:#1B2D55;border:5px solid var(--c);border-radius:36px;padding:40px 48px 36px;text-align:center;animation:pop .35s both;box-shadow:0 0 80px -10px var(--c)}
+#card .big-ic{font-size:96px;line-height:1.1}
+#card h2{margin:8px 0 16px;font-size:54px;color:var(--c);line-height:1.3}
+#card ul{list-style:none;margin:0;padding:0;text-align:left;font-size:36px}
+#card li{padding:12px 24px;margin:10px 0;border-radius:18px;background:rgba(255,255,255,.08);animation:rise .4s both}
+#x{position:absolute;top:16px;right:24px;font:inherit;font-size:44px;border:0;background:none;color:var(--ink);cursor:pointer}
+</style>
+</head>
+<body>
+<div id="cv">
+<div id="app">
+<header><div class="unit">🏛️ அலகு 1 · சனநாயக ஆட்சி முறை</div><h1 id="t"></h1></header>
+<div id="stage"><div class="grid" id="g"></div></div>
+<div id="hint"></div>
+<nav><button id="pv" aria-label="முந்தையது">◀</button><div id="dots"></div><button id="nx" aria-label="அடுத்தது">▶</button></nav>
+</div>
+<div id="pop"><div id="card"><button id="x" aria-label="மூடு">✕</button><div class="big-ic" id="ci"></div><h2 id="ch"></h2><ul id="cl"></ul></div></div>
+</div>
+<script>
+var COL=['#FCA311','#2EC4B6','#FF6B8B','#9D8DFF','#4ADE80','#FF9F5A'];
+var S=[
+{t:'1. அறிமுகம்: சனநாயகத்தின் ஆரம்பமும் பரம்பலும்',sep:{0:'+',1:'='},big:1,it:[
+['👥','Demos',['கிரேக்கச் சொல்: மக்கள்']],
+['⚡','Kratos',['கிரேக்கச் சொல்: ஆட்சி / அதிகாரம்']],
+['🏛️','Democracy (சனநாயகம்)',['Demos + Kratos என்ற கிரேக்கச் சொற்களிலிருந்து உருவானது','மக்களால் மக்களுக்காக நடைமுறைப்படுத்தப்படும் ஆட்சி']]]},
+{t:'2. சனநாயகத்தின் வகைகள்',sep:{0:'VS'},big:1,it:[
+['🗣️','நேரடி சனநாயகம்',['பண்டைய கிரேக்கம் (ஏதென்ஸ்): மக்கள் மன்றங்கள் மூலம் நேரடியாகத் தீர்மானம்','பெண்கள், அடிமைகள், வெளிநாட்டவருக்கு வாய்ப்பிருக்கவில்லை','கிமு 6ஆம் நூற்றாண்டு இந்தியா: "வஜ்ஜி" அரசில் கூட்டங்கள், கலந்துரையாடல்கள், மூத்தோரை மதித்தல்']],
+['🗳️','மறைமுக / பிரதிநிதித்துவ சனநாயகம்',['மக்கள் பிரதிநிதிகளைத் தெரிவுசெய்து அவர்கள் மூலம் ஆட்சி நடத்துதல்','கிபி 17ஆம் நூற்றாண்டில் ஐரோப்பாவில் பிரதான ஆட்சிமுறையாக வளர்ந்தது','பாராளுமன்றம் போன்ற பிரதிநிதித்துவ நிறுவனங்கள் உருவாயின']],
+['🧗','நேரடி சனநாயகத்தின் சவால்கள்',['நிலப்பரப்பு விசாலமாக இருத்தல்','அதிக சனத்தொகை','சமூகத் தேவைகளின் சிக்கலான தன்மை','அனைவரையும் ஒரே இடத்தில் திரட்டுவதில் சிரமம்']]]},
+{t:'3. சனநாயக ஆட்சிமுறையின் பண்புகள்',it:[
+['👍','பெரும்பான்மையினரின் விருப்பம்',['பெரும்பான்மை வாக்கைப் பெற்ற கட்சி அல்லது குழுவுக்கே ஆட்சி அதிகாரம்']],
+['🌱','சனநாயகம் ஒரு வாழ்க்கை முறை',['பிறர் கருத்துக்களை மதித்தல்','கலந்துரையாடல் மூலம் தீர்மானம் எடுத்தல்','சமத்துவம் பேணல்','உரிமைகளுடன் கடமைகளை நிறைவேற்றல்']],
+['🧑‍🤝‍🧑','சர்வஜன வாக்குரிமை',['இனம், பாலினம், தொழில், வருமான வேறுபாடின்றி தகுதியுள்ள அனைவருக்கும் வாக்குரிமை','இலங்கை அரசியலமைப்பின் 3ஆம் உறுப்புரை: இறையாண்மை மக்களுக்குரியது']],
+['🚩','அரசியல் கட்சி முறை',['ஒரு கட்சி: சீனா, கியூபா, வட கொரியா','இரு கட்சி: பிரித்தானியா, ஐக்கிய அமெரிக்கா','பல கட்சி: இலங்கை, இந்தியா','நன்மைகள்: மக்கள் கருத்தைப் பிரதிநிதித்துவப்படுத்தல், ஏதேச்சாதிகாரத்தைத் தடுத்தல், ஆளுங்கட்சியை நல்வழிப்படுத்தல், பன்முகத்தன்மை, வேற்றுமையில் ஒற்றுமை']],
+['📍','தேர்தல் தொகுதிகள்',['பிரதேச வேறுபாடுகளைக் கவனத்தில் கொண்டு அனைவரையும் பிரதிநிதித்துவப்படுத்தல்','பிரதேச மட்டத்தில் மக்கள் தலைவர்களை உருவாக்கல்','தொகுதிக்குப் பொறுப்புக்கூறும் பிரதிநிதிகள்','பிரதேச அபிவிருத்திக்கான வாய்ப்பு']],
+['✅','சுதந்திரமானதும் நியாயமானதுமான தேர்தல்',['குறிப்பிட்ட கால எல்லைக்குள் தேர்தல் நடைபெறல்','தகுதியுடையோர் வாக்காளராகவும் வேட்பாளராகவும் ஆகும் உரிமை','சுதந்திரமான, சுமூகமான சூழலில் நடத்தப்படல்']],
+['🆚','ஆளுங்கட்சி / எதிர்க்கட்சி',['பெரும்பான்மைப் பிரதிநிதிகளைப் பெற்றது ஆளுங்கட்சி; குறைவானவை எதிர்க்கட்சி','எதிர்க்கட்சியின் கடமைகள்: சிறந்த செயற்பாடுகளுக்கு ஒத்துழைத்தல், விமர்சித்து நல்வழிப்படுத்தல், ஜனநாயக விரோதச் செயல்களை எதிர்த்தல், சிறந்த மாற்று ஆட்சியை அமைத்தல்']],
+['🕊️','சுதந்திரம், சமத்துவம், உரிமைகள்',['வெளித்தடைகளின்றி மனிதன் தனது தனித்துவத்தை விருத்தி செய்யும் நிலையே சுதந்திரம் (ஜி.டி.எச். கோல்)','சுதந்திரத்தைச் சட்டதிட்டங்களுக்கு உட்பட்டே அனுபவிக்க வேண்டும்']],
+['📜','அரசியலமைப்பிற்கு இணங்க தொழிற்படுதல்',['அரசியலமைப்பு நாட்டின் அடிப்படைச் சட்டம்','சட்டவாக்கம், நிறைவேற்று, நீதித்துறைகளின் அமைப்பையும் அதிகாரங்களையும் வரையறுக்கிறது']],
+['📰','ஊடகச் சுதந்திரம்',['மக்கள் கருத்துக்களைத் தெரிவிக்கவும் தகவல்களைப் பெறவும் உதவுகிறது','அரசின் தீர்மானங்களை மக்களுக்கு அறியத்தருவது நல்லாட்சிக்கு அவசியம்']],
+['⚖️','சட்டத்தின் ஆட்சி',['சட்டத்தின் மேன்மை: ஆட்சியாளரும் ஆளப்படுவோரும் சட்டத்திற்கு அடிபணிதல்','சட்டத்தின் முன் சமத்துவம்: இனம், மதம், பாலினம், தகுதி வேறுபாடின்றி அனைவரும் சமம்']]]},
+{t:'4. தேசிய அரசின் தோற்றமும் பரம்பலும் இயல்பும்',big:1,it:[
+['🌍','தோற்றத்திற்கான காரணிகள்',['புரட்டஸ்தாந்து மத சீர்திருத்த இயக்கம்','விஞ்ஞான மறுமலர்ச்சி','மானிய முறை வீழ்ச்சியும் முதலாளித்துவ எழுச்சியும்','விஞ்ஞான அறிவு வளர்ச்சி']],
+['🧠','அரசியல் சிந்தனையாளர்கள்',['நிக்கொலோ மாக்கியவல்லி','ஜோன் போடின்','தோமஸ் ஹொப்ஸ்','இவர்களின் சிந்தனைகள் தேசிய அரசு பலமடையக் காரணமாயின']],
+['🚩','எழுச்சி பெற்ற நாடுகள்',['இங்கிலாந்து','பிரான்ஸ்','ஒல்லாந்து','போர்த்துக்கல்']],
+['💪','பலமடையக் காரணமான அம்சங்கள்',['தேசிய ஒருமைப்பாடு','போர் மற்றும் படைப்பலம்','வளர்ச்சியடைந்த பொருளாதாரம்','மக்களின் அறிவும் ஆக்கபூர்வ திறமைகளும்']]]},
+{t:'5. அரசின் வகிபாகம் / பங்கு',it:[
+['🛡️','சட்டமும் ஒழுங்கும்',['சட்டம், ஒழுங்கு, சமாதானத்தைப் பாதுகாத்தல்']],
+['🤝','சமூக நலச் சேவைகள்',['சமூக நலச் சேவைகளை வழங்கல்']],
+['🍚','வறுமை ஒழிப்பு',['வறுமையை ஒழிப்பதற்கான நடவடிக்கைகள் எடுத்தல்']],
+['🏢','பொதுச் சேவைகள்',['பொதுச் சேவைகளை நடாத்திச் செல்லல்']],
+['🏗️','அபிவிருத்தி',['அபிவிருத்திச் செயற்திட்டங்களை நடைமுறைப்படுத்தல்']],
+['🕊️','முரண்பாடுகளைக் களைதல்',['போர், வன்முறைகள், இன முரண்பாடுகளைக் களைதல்']],
+['🧑‍🤝‍🧑','அடிப்படை மனித உரிமைகள்',['அடிப்படை மனித உரிமைகளைப் பாதுகாத்தல்']]]},
+{t:'6. ஆட்சி முறைகளின் இயல்புகளும் பண்புகளும்',sep:{1:'VS'},big:1,it:[
+['🏞️','அரசு × அரசாங்கம்',['அரசு: நிலம் (ஆட்சிப்புலம்), மக்கள் தொகை, அரசாங்கம், இறையாண்மை ஆகிய 4 கூறுகள்','அரசாங்கம்: அரசின் விருப்பங்களைச் செயல்வடிவமாக்கும் முகவர் அமைப்பு']],
+['🏛️','ஒற்றையாட்சி அரசு',['சட்டவாக்கம், நிறைவேற்று, நீதி அதிகாரங்கள் ஒரு மத்திய அரசிடம் குவிந்திருக்கும்','சில அதிகாரங்கள் உள்ளூராட்சிக்குப் பரவலாக்கப்பட்டாலும் மத்திய அரசு மீளப் பெறலாம்','எ.கா: இலங்கை, ஐக்கிய இராச்சியம், பிரான்ஸ்']],
+['🗺️','கூட்டாட்சி / சமஷ்டி அரசு',['மத்திய, மாநில அரசுகளிடையே அரசியலமைப்பின் மூலம் அதிகாரப் பகிர்வு','எழுதப்பட்ட அரசியலமைப்பு; விளக்கமளிக்கும் அதிகாரம் உயர் நீதிமன்றத்திடம்','சட்டவாக்கத்துறையில் மேலவை (எ.கா: அமெரிக்க செனட்)','எ.கா: அமெரிக்கா, சுவிட்சர்லாந்து, இந்தியா, ஆஸ்திரேலியா']]]},
+{t:'7. அரசாங்க கட்டமைப்பும் அதன் தொழிற்பாடுகளும்',sep:{0:'VS'},big:1,it:[
+['🏛️','பாராளுமன்ற அரசாங்க முறை',['நிறைவேற்றுத்துறை உறுப்பினர்கள் பாராளுமன்றப் பிரதிநிதிகளிலிருந்தே தெரிவு','பாராளுமன்றத்திற்குப் பொறுப்புக்கூற வேண்டும்','பெயரளவு நிர்வாகி (அரசர்/ஜனாதிபதி) + உண்மை நிர்வாகி (பிரதமர், அமைச்சரவை)','எ.கா: பிரித்தானியா']],
+['🧑‍⚖️','ஜனாதிபதி அரசாங்க முறை',['நிறைவேற்று அதிகாரம் ஜனாதிபதியிடம்','ஜனாதிபதி அரச தலைவரும் அரசாங்கத் தலைவரும்','பாராளுமன்றத்திற்கு நேரடியாகப் பொறுப்புக்கூற வேண்டியதில்லை','எ.கா: ஐக்கிய அமெரிக்கா']]]},
+{t:'8. பிரஜைகளின் பொறுப்புகள் / கடமைகள்',it:[
+['⚖️','கீழ்ப்படிதல்',['சட்டத்திற்கும் சமாதானத்திற்கும் கீழ்ப்படிதல்']],
+['💰','வரி',['வரிகளை ஒழுங்காகச் செலுத்துதல்']],
+['🗳️','வாக்களித்தல்',['வாக்களிக்கும் உரிமையைப் பயன்படுத்துதல்']],
+['🏫','பொதுச் சொத்து',['பொதுச் சொத்துக்களைப் பாதுகாத்தல்']],
+['🙏','கலாச்சாரக் கடமைகள்',['மூத்தோரை மதித்தல்','சமூகப் பழக்கவழக்கங்களைப் பின்பற்றுதல்']],
+['📜','1978 அரசியலமைப்பு',['அத்தியாயம் 28: உரிமைகளும் சுதந்திரங்களும் கடமைகளையும் பொறுப்புகளையும் நிறைவேற்றுவதிலிருந்து புறம்பாக நிகழ முடியாது']]]},
+{t:'9. அரசின் பிரஜைகள் மீதான பொறுப்புகள்',it:[
+['🕊️','சட்டமும் சமாதானமும்',['சட்டத்தையும் சமாதானத்தையும் பாதுகாத்தல்']],
+['⚖️','சமத்துவம்',['சமத்துவம் எனும் மூலக்கோட்பாட்டைப் பாதுகாத்தல்']],
+['📜','அரசியலமைப்பு',['அரசியலமைப்பிற்கு அமைவாகத் தொழிற்படுதல்']],
+['🔎','சட்டமும் நியாயமும்',['சட்டத்தினையும் நியாயத்தினையும் பேணல்']],
+['🌾','வளப் பகிர்வு',['நாட்டின் வளங்களை நியாயமாகப் பகிர்ந்தளித்தல்']],
+['💡','வெளிப்படைத்தன்மை',['அரச நிதியைப் பயன்படுத்தும்போது வெளிப்படைத்தன்மையைப் பேணல்']],
+['🤝','சமூகப் பாதுகாப்பு',['சமூகப் பாதுகாப்பையும் நலன்களையும் பேணல்']],
+['🌳','சுற்றாடல்',['சுற்றாடலைப் பாதுகாத்துப் பராமரித்தல்']]]},
+{t:'10. சனநாயக ஆட்சி முறை வெற்றிபெற அவசியமான காரணிகள்',it:[
+['🗳️','நியாயமான தேர்தல்',['சர்வஜன வாக்குரிமை மூலம் தடையின்றி வாக்களித்தல்','அனைத்து அரசியல் குழுக்களுக்கும் சம வாய்ப்பு']],
+['⚖️','சட்டத்தின் ஆட்சி, நீதித்துறை சுதந்திரம்',['நீதித்துறை நடுநிலையாகவும் சுயாதீனமாகவும் தொழிற்படுதல்']],
+['🧠','அரசியல் அறிவுள்ள மக்கள்',['தகுதியான தலைவர்களைத் தெரிவுசெய்யப் போதுமான அரசியல் தெளிவு']],
+['📰','நடுநிலை ஊடகம்',['உண்மையான தகவல்களைப் பக்கச்சார்பின்றி வழங்குதல்']],
+['🎓','தனிநபர் திறமைக்கேற்ற சந்தர்ப்பம்',['கல்வி, தொழில் பயிற்சி மூலம் திறமைகளை வளர்க்கச் சந்தர்ப்பம்']],
+['🙋','ஆட்சியில் பங்குபற்றல்',['சர்வஜன வாக்குரிமை மற்றும் பிரதிநிதிகள் மூலம் பங்கேற்றல்']],
+['🍎','தனிமனித அபிவிருத்தி',['உணவு, உடை, உறைவிடம், கல்வி, சுகாதாரம் போன்றவற்றை மேம்படுத்தல்']],
+['🤲','சமூக நலனோம்பல்',['வாழ்க்கைத்தரத்தை உயர்த்த அரசு நலன்புரிச் செயற்பாடுகளில் ஈடுபடுதல் (கல்வி, சுகாதாரம், வீடமைப்பு, வறுமை ஒழிப்பு)']]]}
+];
+var n=0,seen={};
+var $=function(i){return document.getElementById(i)};
+function show(i){
+  n=Math.max(0,Math.min(S.length-1,i));var s=S[n];
+  $('t').textContent=s.t;
+  var h='',d=0;
+  s.it.forEach(function(it,k){
+    var key=n+'-'+k;
+    h+='<button class="tile'+(s.big?' big':'')+(seen[key]?' seen':'')+'" style="--c:'+COL[k%6]+';--d:'+(d+=.12).toFixed(2)+'s" data-k="'+k+'"><span class="ic">'+it[0]+'</span>'+it[1]+'</button>';
+    if(s.sep&&s.sep[k]){h+='<span class="sep" style="--d:'+(d+=.12).toFixed(2)+'s">'+s.sep[k]+'</span>'}
+  });
+  $('g').innerHTML=h;
+  $('hint').textContent='👆 ஒவ்வொன்றையும் தொடுங்கள் ('+s.it.filter(function(_,k){return seen[n+'-'+k]}).length+'/'+s.it.length+')';
+  var dots='';for(var i2=0;i2<S.length;i2++)dots+='<i data-n="'+i2+'"'+(i2==n?' class="on"':'')+'></i>';
+  $('dots').innerHTML=dots;
+  $('pv').disabled=n==0;$('nx').disabled=n==S.length-1;
+  $('stage').scrollTop=0;
+}
+function open_(k){
+  var it=S[n].it[k];seen[n+'-'+k]=1;
+  var c=COL[k%6];$('card').style.setProperty('--c',c);
+  $('ci').textContent=it[0];$('ch').textContent=it[1];
+  $('cl').innerHTML=it[2].map(function(l,j){return '<li style="animation-delay:'+(j*.12)+'s">'+l.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</li>'}).join('');
+  $('pop').classList.add('show');
+}
+function close_(){$('pop').classList.remove('show');show(n)}
+$('g').addEventListener('click',function(e){var b=e.target.closest('.tile');if(b)open_(+b.dataset.k)});
+$('pop').addEventListener('click',function(e){if(e.target.id=='pop'||e.target.id=='x')close_()});
+$('pv').onclick=function(){show(n-1)};$('nx').onclick=function(){show(n+1)};
+$('dots').addEventListener('click',function(e){if(e.target.dataset.n)show(+e.target.dataset.n)});
+document.addEventListener('keydown',function(e){
+  if(e.key=='Escape')close_();
+  else if(!$('pop').classList.contains('show')){if(e.key=='ArrowRight')show(n+1);if(e.key=='ArrowLeft')show(n-1)}
+});
+var x0=null;
+document.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){
+  if(x0===null||$('pop').classList.contains('show'))return;
+  var dx=e.changedTouches[0].clientX-x0;x0=null;
+  if(Math.abs(dx)>70)show(n+(dx<0?1:-1));
+},{passive:true});
+function fit(){
+  var w=innerWidth,h=innerHeight,por=w/h<1,W=por?1080:1920,H=por?1920:1080,k=Math.min(w/W,h/H),cv=$('cv');
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  cv.style.transform='translate('+(-W*k/2)+'px,'+(-H*k/2)+'px) scale('+k+')';
+}
+addEventListener('resize',fit);fit();
+show(0);
+</script>
+</body>
+</html>
